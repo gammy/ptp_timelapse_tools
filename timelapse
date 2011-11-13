@@ -4,84 +4,89 @@ use warnings;
 
 use File::Copy;
 
-my $path = "img";
-my $cap_path = "/home/gammy/programs/canon-capture/capture-1.0.4-cvs-20071123";
-my $cap_cmd = "$cap_path/capture";
+my $path      = "img";
+my $cap_cmd   = "gphoto2";
 my $file_dump = "dump.jpg";
-my $delay = 20;
-my $seq = 382;
+my $delay     = 20;
+my $seq       = 1;
 
-my @cmd_shot = ("capture $file_dump");
-my @cmd_init = ('start', 
-	       'flash off', 
-	       'zoom 0', 
-	       'metering spot',
-	       'focuspoint center');
-my @cmd_restart = ('zoom 2', 'quit', @cmd_init);
+my @cmd_init = ('--debug',
+	        '--filename', "$file_dump",
+	        '--debug-logfile=ixus400_run.log',
+	        '--set-config', 'capture=1',           # Capture mode (must be first config opt)
+	        '--set-config', 'imagequality=2',      # Superfine
+	        '--set-config', 'imagesize=3',         # Small
+		'--set-config', 'whitebalance=0',      # Auto
+		'--set-config', 'photoeffect=0',       # None
+		'--set-config', 'iso=4',               # Auto
+		'--set-config', 'capturetarget=1',     # 0=RAM, 1=CF
+		'--set-config', 'flashmode=0',         # Off
+		'--set-config', 'zoom=0',
+		'--set-config', 'meteringmode=1',      # spot
+		'--set-config', 'focusingpoint=0',     # Center 
+		'--set-config', 'afdistance=0',        # 0=Auto, 1=Near, 2=Far
+		'--set-config', 'assistlight=0',       # Off
+		'--set-config', 'shutterspeed=0',      # Auto
+		'--set-config', 'aperture=0');         # Auto
+
+my @cmd_shot = (@cmd_init, 
+	#'--debug',
+	#        '--debug-logfile=ixus400_capture-and-download.log',
+                '--set-config', 'focuslock=1',
+		'--capture-image-and-download');
 
 $delay-=2;
 
 sub canon_send {
-	my $cmd = shift;
+	my @args = @_;
 
-	printf("Send '%s'..\n", $cmd);
-	system($cap_cmd, $cmd);
+	print("$cap_cmd @args\n");
+	system($cap_cmd, @args);
 
 	if($? & 127) {
-		printf("Command error, resending with start sequence first.\n");
-		canon_send('start');
-		canon_send($cmd);
+		die("Command error, resending with start sequence first.\n");
+		#sleep(1);
+		#canon_send($cmd);
 	}
 
-}
-
-sub canon_cmd {
-
-	foreach my $cmd (@_) {
-
-		canon_send($cmd);
-
-		if($cmd =~ m/^capture/) {
-
-			if(! -e "$file_dump") {
-				printf("ERROR: capture failed (no dumpfile)\n");
-				canon_cmd((@cmd_init, @cmd_shot));
-				next;
-			}
-
-			my $file_dst = sprintf("%s/cap_%06d.jpg", $path, $seq);
-
-			if(! move($file_dump, $file_dst)) {
-				printf("ERROR: move \"%s\" -> \"%s\" failed\n",
-				       $file_dump, 
-				       $file_dst);
-				next;
-			} else {
-				printf("Stored \"%s\"\n",
-				       $file_dst);
-			}
-
-			$seq++;
-
-			if($seq % 100 == 0 && $seq != 0) {
-				for my $cmd (@cmd_restart) {
-					canon_send($cmd);
-				}
-			}
-		}elsif($cmd =~ m/^start/) {
-		}elsif($cmd =~ m/^quit/) {
-		}
-
-	}
 }
 
 die "Destination path \"$path\" doesn't exist.\n\n" if ! -d $path;
 
-canon_cmd(@cmd_init);
+#canon_send(@cmd_init);
 
 for(;;) {
 
-	canon_cmd(@cmd_shot);
+	printf("\nTaking shot\n");
+	canon_send(@cmd_shot);
+
+	if(! -e "$file_dump") {
+		printf("ERROR: capture failed (no dumpfile)\n");
+		die;
+#				sleep(1);
+#				canon_cmd(@cmd_init);
+#				next;
+	}
+
+	my $file_dst = sprintf("%s/cap_%06d.jpg", $path, $seq);
+
+	if(! move($file_dump, $file_dst)) {
+		printf("ERROR: move \"%s\" -> \"%s\" failed\n",
+		       $file_dump, 
+		       $file_dst);
+		next;
+	} else {
+		printf("Stored \"%s\"\n",
+		       $file_dst);
+	}
+
+	$seq++;
+
+#			if($seq % 100 == 0 && $seq != 0) {
+#				for my $cmd (@cmd_restart) {
+#					canon_send($cmd);
+#				}
+#			}
 
 	my $count_down = $delay;
 	$| = 1;
@@ -91,7 +96,7 @@ for(;;) {
 		if($count_down % 10 == 0 && 
 	           $count_down != 0) {
 		   	# Prevent lens from retracting
-			canon_cmd('zoom 0');
+			canon_send('--set-config', 'zoom=0');
 		}
 
 		sleep(1);
