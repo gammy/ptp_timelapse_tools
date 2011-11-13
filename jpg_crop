@@ -1,0 +1,19 @@
+#!/bin/bash
+
+size=1280x720
+offset=200+250;
+dst=cropped
+
+if [ ! -d ${dst}/ ]; then
+	mkdir ${dst}/
+fi
+
+for f in *.jpg; do
+	echo -n ${f}..
+	if [ -e ${dst}/${f} ]; then
+		echo already exists
+	else
+		convert ${f} -crop ${size}+${offset} -repage ${size} ${dst}/${f}
+		echo ok
+	fi
+done

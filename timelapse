@@ -7,11 +7,11 @@ use IPC::Open3;
 use IO::Select;
 use Time::HiRes qw/usleep alarm/;
 
-my $path       = "img";
+my $path       = "img/heater_b/";
 my $file_dump  = "dump.jpg";
 my $cap_cmd    = "gphoto2 --shell --filename \"$file_dump\"";
 my $cap_timeout= 60;
-my $delay      = 20;
+my $delay      = 15; # Lowest realistic delay on USB1.1 w/ large files
 my $seq        = 1;
 
 my $pid;
@@ -23,19 +23,19 @@ my @cmd_init = ('set-config capture=1',       # Capture mode (must be first conf
 	        'set-config imagesize=0',     # 0=Large 1=Med1 2=Med2 3=Small
 		'set-config whitebalance=0',  # Auto
 		'set-config photoeffect=0',   # 0=None
-		'set-config iso=4',           # Auto
 		'set-config capturetarget=0', # 0=RAM, 1=CF
 		'set-config flashmode=0',     # 0=Off 1=Auto 2=On 3=Fill 4=Auto
-		'set-config zoom=0',
+		'set-config zoom=6',
 		'set-config meteringmode=1',  # 0=Center 1=Spot 2=Evaluative
 		'set-config focusingpoint=0', # Center 
 		'set-config afdistance=0',    # 0=Auto 1=Near 2=Far
 		'set-config assistlight=1',   # 0=Off 1=On
-		'set-config shutterspeed=0',  # Auto
-		'set-config aperture=0',      # Auto
-		'set-config focuslock=1');    # 0=Lock 1=Unlock
+		'set-config shutterspeed=0',  # 0=Auto
+		'set-config iso=4',           # 4=Auto
+		'set-config aperture=0');     # Auto
 
-my @cmd_shot = ('capture-image-and-download');
+my @cmd_shot = ('set-config focuslock=1',     # 0=Lock 1=Unlock
+                'capture-image-and-download');
 
 sub canon_send_seq {
 
@@ -131,9 +131,13 @@ for(;;) {
 	my $file_dst = sprintf("%s/cap_%06d.jpg", $path, $seq);
 
 	if(! move($file_dump, $file_dst)) {
+		# FIXME This might turn out to be fatal if the pipe died
 		printf("\e[31m* Error: move \"%s\" -> \"%s\" failed\e[39m\n",
 		       $file_dump, 
 		       $file_dst);
+#	       print "* Re-initializing\n";
+#	       my $t_beg = time();
+#	       canon_send_seq(\$sel, @cmd_init);
 	} else {
 		printf("\e[32m* Stored \"%s\"\e[39m\n",
 		       $file_dst);
@@ -146,7 +150,7 @@ for(;;) {
 
 	print "* Capture took $t_duration seconds\n";
 	if($t_remain > 0) {
-		print "* $t_remain seconds behind!\n";
+		print "\e[33m* $t_remain seconds behind!\e[39m\n";
 	} elsif($t_remain < 0) {
 		$t_remain = abs($t_remain);
 		print "* $t_remain seconds until next capture\n";

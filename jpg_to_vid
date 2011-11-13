@@ -1,0 +1,16 @@
+#!/bin/bash
+
+W=1280
+H=720
+
+CODEC=mjpeg #mpeg4
+
+mencoder -fps 25 \
+	 -ovc lavc \
+	 -lavcopts vcodec=${CODEC} \
+	 -vf scale=${W}:${H} \
+	 -o ${1} \
+	 "mf://*.jpg"
+	 
+	 #-lavcopts vcodec=${CODEC}:vbitrate=1400 \
+	 #-ffourcc DIVX \
