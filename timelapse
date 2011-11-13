@@ -3,107 +3,154 @@ use strict;
 use warnings;
 
 use File::Copy;
+use IPC::Open3;
+use IO::Select;
+use Time::HiRes qw/usleep alarm/;
 
-my $path      = "img";
-my $cap_cmd   = "gphoto2";
-my $file_dump = "dump.jpg";
-my $delay     = 20;
-my $seq       = 1;
+my $path       = "img";
+my $file_dump  = "dump.jpg";
+my $cap_cmd    = "gphoto2 --shell --filename \"$file_dump\"";
+my $cap_timeout= 60;
+my $delay      = 20;
+my $seq        = 1;
 
-my @cmd_init = ('--debug',
-	        '--filename', "$file_dump",
-	        '--debug-logfile=ixus400_run.log',
-	        '--set-config', 'capture=1',           # Capture mode (must be first config opt)
-	        '--set-config', 'imagequality=2',      # Superfine
-	        '--set-config', 'imagesize=3',         # Small
-		'--set-config', 'whitebalance=0',      # Auto
-		'--set-config', 'photoeffect=0',       # None
-		'--set-config', 'iso=4',               # Auto
-		'--set-config', 'capturetarget=1',     # 0=RAM, 1=CF
-		'--set-config', 'flashmode=0',         # Off
-		'--set-config', 'zoom=0',
-		'--set-config', 'meteringmode=1',      # spot
-		'--set-config', 'focusingpoint=0',     # Center 
-		'--set-config', 'afdistance=0',        # 0=Auto, 1=Near, 2=Far
-		'--set-config', 'assistlight=0',       # Off
-		'--set-config', 'shutterspeed=0',      # Auto
-		'--set-config', 'aperture=0');         # Auto
+my $pid;
+my $sel;
+my $captured;
 
-my @cmd_shot = (@cmd_init, 
-	#'--debug',
-	#        '--debug-logfile=ixus400_capture-and-download.log',
-                '--set-config', 'focuslock=1',
-		'--capture-image-and-download');
+my @cmd_init = ('set-config capture=1',       # Capture mode (must be first config opt)
+	        'set-config imagequality=2',  # Superfine
+	        'set-config imagesize=0',     # 0=Large 1=Med1 2=Med2 3=Small
+		'set-config whitebalance=0',  # Auto
+		'set-config photoeffect=0',   # 0=None
+		'set-config iso=4',           # Auto
+		'set-config capturetarget=0', # 0=RAM, 1=CF
+		'set-config flashmode=0',     # 0=Off 1=Auto 2=On 3=Fill 4=Auto
+		'set-config zoom=0',
+		'set-config meteringmode=1',  # 0=Center 1=Spot 2=Evaluative
+		'set-config focusingpoint=0', # Center 
+		'set-config afdistance=0',    # 0=Auto 1=Near 2=Far
+		'set-config assistlight=1',   # 0=Off 1=On
+		'set-config shutterspeed=0',  # Auto
+		'set-config aperture=0',      # Auto
+		'set-config focuslock=1');    # 0=Lock 1=Unlock
 
-$delay-=2;
+my @cmd_shot = ('capture-image-and-download');
 
-sub canon_send {
-	my @args = @_;
+sub canon_send_seq {
 
-	print("$cap_cmd @args\n");
-	system($cap_cmd, @args);
+	my ($sel, @cmds) = @_;
 
-	if($? & 127) {
-		die("Command error, resending with start sequence first.\n");
-		#sleep(1);
-		#canon_send($cmd);
+	my $t_beg = time();
+
+	foreach my $cmd (@cmds) {
+
+		print "<< $cmd\n";
+		print WRITE "$cmd\n";
+
+		my $read = 0;
+		while($read == 0) {
+
+		      my @ready = $$sel->can_read;
+
+		      foreach my $h (@ready) {
+			      my $buf = '';
+			      if ($h eq \*ERROR) {
+				      sysread(ERROR, $buf, 4096);
+				      $read++;
+				      if($buf) {
+					      print "\e[36m>> $buf\e[39m"
+				      }
+			      } else {
+				      sysread(READ, $buf, 4096);
+				      $read++;
+				      if($buf) { 
+					      print "\e[36m>> $buf\e[39m"
+				      } 
+			      }
+		      }
+		}
 	}
+
+	my $t_end = time();
+
+	my $t_duration = $t_end - $t_beg;
+
+	printf("* Sequence took %d seconds\n",
+		$t_duration);
+
 
 }
 
-die "Destination path \"$path\" doesn't exist.\n\n" if ! -d $path;
+sub stop {
+    $SIG{INT} = \&stop;
+    canon_send_seq(\$sel, 'quit');
+    waitpid($pid, 0);
+    exit;
+}
 
-#canon_send(@cmd_init);
+sub capture_timeout {
+    $SIG{ALRM} = \&capture_timeout;
+    $captured = 0;
+    print "* Capture timed out!\n";
+}
+
+$SIG{INT} = \&stop;
+$SIG{ALRM} = \&capture_timeout;
+
+die "* Destination path \"$path\" doesn't exist.\n\n" if ! -d $path;
+
+$sel = new IO::Select();
+$pid = open3(\*WRITE, \*READ,\*ERROR, $cap_cmd);
+
+$sel->add(\*READ);
+$sel->add(\*ERROR);
+
+print "* Initializing\n";
+canon_send_seq(\$sel, @cmd_init);
 
 for(;;) {
 
-	printf("\nTaking shot\n");
-	canon_send(@cmd_shot);
+	my $t_beg = time();
 
-	if(! -e "$file_dump") {
-		printf("ERROR: capture failed (no dumpfile)\n");
-		die;
-#				sleep(1);
-#				canon_cmd(@cmd_init);
-#				next;
+	print "* Capturing\n";
+	canon_send_seq(\$sel, @cmd_shot);
+ 
+	alarm($cap_timeout);
+	printf("* Waiting for captured image\n");
+	$captured = 1;
+	while($captured) {
+		if(-f $file_dump) {
+			$captured = 0;
+			next;
+		}
+		usleep(100000);
 	}
+	alarm(0);
 
 	my $file_dst = sprintf("%s/cap_%06d.jpg", $path, $seq);
 
 	if(! move($file_dump, $file_dst)) {
-		printf("ERROR: move \"%s\" -> \"%s\" failed\n",
+		printf("\e[31m* Error: move \"%s\" -> \"%s\" failed\e[39m\n",
 		       $file_dump, 
 		       $file_dst);
-		next;
 	} else {
-		printf("Stored \"%s\"\n",
+		printf("\e[32m* Stored \"%s\"\e[39m\n",
 		       $file_dst);
+	       $seq++;
 	}
 
-	$seq++;
+	my $t_end = time();
+	my $t_duration = $t_end - $t_beg;
+	my $t_remain = $t_duration - $delay;
 
-#			if($seq % 100 == 0 && $seq != 0) {
-#				for my $cmd (@cmd_restart) {
-#					canon_send($cmd);
-#				}
-#			}
-
-	my $count_down = $delay;
-	$| = 1;
-	printf("Capturing in\e[s", $count_down);
-	while($count_down >= 0) {
-		
-		if($count_down % 10 == 0 && 
-	           $count_down != 0) {
-		   	# Prevent lens from retracting
-			canon_send('--set-config', 'zoom=0');
-		}
-
-		sleep(1);
-		printf("\e[u %02d...", $count_down);
-
-		$count_down--;
+	print "* Capture took $t_duration seconds\n";
+	if($t_remain > 0) {
+		print "* $t_remain seconds behind!\n";
+	} elsif($t_remain < 0) {
+		$t_remain = abs($t_remain);
+		print "* $t_remain seconds until next capture\n";
+		sleep($t_remain);
 	}
-	printf("\n");
-	$| = 0;
+
 }
