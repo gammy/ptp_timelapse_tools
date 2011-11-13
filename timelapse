@@ -1,0 +1,104 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use File::Copy;
+
+my $path = "img";
+my $cap_path = "/home/gammy/programs/canon-capture/capture-1.0.4-cvs-20071123";
+my $cap_cmd = "$cap_path/capture";
+my $file_dump = "dump.jpg";
+my $delay = 20;
+my $seq = 382;
+
+my @cmd_shot = ("capture $file_dump");
+my @cmd_init = ('start', 
+	       'flash off', 
+	       'zoom 0', 
+	       'metering spot',
+	       'focuspoint center');
+my @cmd_restart = ('zoom 2', 'quit', @cmd_init);
+
+$delay-=2;
+
+sub canon_send {
+	my $cmd = shift;
+
+	printf("Send '%s'..\n", $cmd);
+	system($cap_cmd, $cmd);
+
+	if($? & 127) {
+		printf("Command error, resending with start sequence first.\n");
+		canon_send('start');
+		canon_send($cmd);
+	}
+
+}
+
+sub canon_cmd {
+
+	foreach my $cmd (@_) {
+
+		canon_send($cmd);
+
+		if($cmd =~ m/^capture/) {
+
+			if(! -e "$file_dump") {
+				printf("ERROR: capture failed (no dumpfile)\n");
+				canon_cmd((@cmd_init, @cmd_shot));
+				next;
+			}
+
+			my $file_dst = sprintf("%s/cap_%06d.jpg", $path, $seq);
+
+			if(! move($file_dump, $file_dst)) {
+				printf("ERROR: move \"%s\" -> \"%s\" failed\n",
+				       $file_dump, 
+				       $file_dst);
+				next;
+			} else {
+				printf("Stored \"%s\"\n",
+				       $file_dst);
+			}
+
+			$seq++;
+
+			if($seq % 100 == 0 && $seq != 0) {
+				for my $cmd (@cmd_restart) {
+					canon_send($cmd);
+				}
+			}
+		}elsif($cmd =~ m/^start/) {
+		}elsif($cmd =~ m/^quit/) {
+		}
+
+	}
+}
+
+die "Destination path \"$path\" doesn't exist.\n\n" if ! -d $path;
+
+canon_cmd(@cmd_init);
+
+for(;;) {
+
+	canon_cmd(@cmd_shot);
+
+	my $count_down = $delay;
+	$| = 1;
+	printf("Capturing in\e[s", $count_down);
+	while($count_down >= 0) {
+		
+		if($count_down % 10 == 0 && 
+	           $count_down != 0) {
+		   	# Prevent lens from retracting
+			canon_cmd('zoom 0');
+		}
+
+		sleep(1);
+		printf("\e[u %02d...", $count_down);
+
+		$count_down--;
+	}
+	printf("\n");
+	$| = 0;
+}
