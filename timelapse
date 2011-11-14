@@ -1,8 +1,5 @@
 #!/usr/bin/env perl
 # TODO:
-# - getopt
-#   - timeout, delay, sequence start, target path, dump filename,
-#     command queue option
 # - command queuing via file
 #   - (supply file like --cmd-file=/tmp/timelapse_cmd) which contains
 #     a list of gphoto shell commands to execute
@@ -195,8 +192,7 @@ for(;;) {
 	       $seq++;
 	}
 
-	my $t_end = time();
-	my $t_duration = $t_end - $t_beg;
+	my $t_duration = time() - $t_beg;
 	my $t_remain = $t_duration - $opts{interval};
 
 	print "* Capture took $t_duration seconds\n";
@@ -204,6 +200,34 @@ for(;;) {
 		print "\e[33m* $t_remain seconds behind!\e[39m\n";
 	} elsif($t_remain < 0) {
 		$t_remain = abs($t_remain);
+
+		if($t_remain >= 2) {
+			if(-f $opts{cmd_file}) {
+
+				my @cmds = ();
+
+				open F, '<', $opts{cmd_file};
+				push @cmds, $_ for <F>;
+				close F;
+
+				unlink $opts{cmd_file};
+
+				print "* Executing " . @cmds . " commands from \"$opts{cmd_file}\"";
+
+				my $tt_beg = time();
+				canon_send_seq(\$sel, @cmds);
+				my $tt_duration = time() - $tt_beg;
+				my $tt_remain = $tt_duration - 2;
+				if($tt_duration - 2 > 0) { # We're behind again, damnit
+					print "\e[33m* $tt_remain seconds behind from additional commands\e[39m\n";
+					$t_remain = 0;
+				} else {
+					print "* Adjusting delay by $tt_duration seconds\e[39m\n";
+					$t_remain -= $tt_duration;
+				}
+			}
+		}
+
 		print "* $t_remain seconds until next capture\n";
 		sleep($t_remain);
 	}
