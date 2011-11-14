@@ -1,19 +1,33 @@
 #!/usr/bin/env perl
+# TODO:
+# - getopt
+#   - timeout, delay, sequence start, target path, dump filename,
+#     command queue option
+# - command queuing via file
+#   - (supply file like --cmd-file=/tmp/timelapse_cmd) which contains
+#     a list of gphoto shell commands to execute
+
 use strict;
 use warnings;
 
+use File::Basename;
+use Getopt::Long;
 use File::Copy;
 use IPC::Open3;
 use IO::Select;
 use Time::HiRes qw/usleep alarm/;
 
-my $path       = "img/heater_b/";
-my $file_dump  = "dump.jpg";
-my $cap_cmd    = "gphoto2 --shell --filename \"$file_dump\"";
-my $cap_timeout= 60;
-my $delay      = 15; # Lowest realistic delay on USB1.1 w/ large files
-my $seq        = 1;
+my %defaults = (
+	"destination"          => 'img',
+	"cmd_file"             => '/tmp/gphoto_cmd', 
+	"dump_file"            => '/tmp/dump.jpg', 
+	"file_mask"            => 'cap_%06d.jpg', 
+	"interval"             => 15,  # Lowest realistic
+	"timeout"              => 60, 
+	"seq_start"            => 1, 
+);
 
+my %opts = %defaults;
 my $pid;
 my $sel;
 my $captured;
@@ -36,6 +50,29 @@ my @cmd_init = ('set-config capture=1',       # Capture mode (must be first conf
 
 my @cmd_shot = ('set-config focuslock=1',     # 0=Lock 1=Unlock
                 'capture-image-and-download');
+
+sub help {
+
+	printf("Usage: %s [args]
+  --destination       destination path           (default '%s')
+  --cmd-file          command queue file         (default '%s')
+  --dump-file         temporary capture filename (default '%s')
+  --file-mask         output sequence file mask  (default '%s')
+  --interval          capture interval in seconds(default '%d')
+  --timeout           capture timeout in seconds (default '%d')
+  --seq-start         start sequence value       (default '%d')
+", 
+	basename($0),
+	$defaults{destination},
+	$defaults{cmd_file},
+	$defaults{dump_file},
+	$defaults{file_mask},
+	$defaults{interval},
+	$defaults{timeout},
+	$defaults{seq_start});
+	
+	exit;
+}
 
 sub canon_send_seq {
 
@@ -95,19 +132,33 @@ sub capture_timeout {
     print "* Capture timed out!\n";
 }
 
+my $result = GetOptions ("destination=s"        => \$opts{destination},
+	                 "cmd-file=s"           => \$opts{cmd_file},
+	                 "dump-file=s"          => \$opts{dump_file},
+	                 "file-mask=s"          => \$opts{file_mask},
+	                 "interval=i"           => \$opts{interval},
+	                 "timeout=i"            => \$opts{timeout},
+	                 "seq-start=i"          => \$opts{seq_start},
+                         "help"                 => \&help);
+
+$opts{cmd_shell} = 'gphoto2 --shell --filename "' . $opts{dump_file} . '"';
+
 $SIG{INT} = \&stop;
 $SIG{ALRM} = \&capture_timeout;
 
-die "* Destination path \"$path\" doesn't exist.\n\n" if ! -d $path;
+die "* Destination path \"" . $opts{destination} . "\" doesn't exist.\n\n" 
+	if ! -d $opts{destination};
 
 $sel = new IO::Select();
-$pid = open3(\*WRITE, \*READ,\*ERROR, $cap_cmd);
+$pid = open3(\*WRITE, \*READ,\*ERROR, $opts{cmd_shell});
 
 $sel->add(\*READ);
 $sel->add(\*ERROR);
 
 print "* Initializing\n";
 canon_send_seq(\$sel, @cmd_init);
+
+my $seq = $opts{seq_start};
 
 for(;;) {
 
@@ -116,11 +167,11 @@ for(;;) {
 	print "* Capturing\n";
 	canon_send_seq(\$sel, @cmd_shot);
  
-	alarm($cap_timeout);
+	alarm($opts{timeout});
 	printf("* Waiting for captured image\n");
 	$captured = 1;
 	while($captured) {
-		if(-f $file_dump) {
+		if(-f $opts{dump_file}) {
 			$captured = 0;
 			next;
 		}
@@ -128,12 +179,12 @@ for(;;) {
 	}
 	alarm(0);
 
-	my $file_dst = sprintf("%s/cap_%06d.jpg", $path, $seq);
+	my $file_dst = sprintf("%s/cap_%06d.jpg", $opts{destination}, $seq);
 
-	if(! move($file_dump, $file_dst)) {
+	if(! move($opts{dump_file}, $file_dst)) {
 		# FIXME This might turn out to be fatal if the pipe died
 		printf("\e[31m* Error: move \"%s\" -> \"%s\" failed\e[39m\n",
-		       $file_dump, 
+		       $opts{dump_file}, 
 		       $file_dst);
 #	       print "* Re-initializing\n";
 #	       my $t_beg = time();
@@ -146,7 +197,7 @@ for(;;) {
 
 	my $t_end = time();
 	my $t_duration = $t_end - $t_beg;
-	my $t_remain = $t_duration - $delay;
+	my $t_remain = $t_duration - $opts{interval};
 
 	print "* Capture took $t_duration seconds\n";
 	if($t_remain > 0) {

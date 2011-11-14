@@ -4,13 +4,17 @@ W=1280
 H=720
 
 CODEC=mjpeg #mpeg4
+avi=$1.avi
+mpg=$1.mpg
 
-mencoder -fps 25 \
-	 -ovc lavc \
+mencoder -ovc lavc \
 	 -lavcopts vcodec=${CODEC} \
 	 -vf scale=${W}:${H} \
-	 -o ${1} \
+	 -o ${avi} \
 	 "mf://*.jpg"
-	 
-	 #-lavcopts vcodec=${CODEC}:vbitrate=1400 \
-	 #-ffourcc DIVX \
+
+#ffmpeg -aspect 16:9 \
+#       -i ${avi} \
+#       -y \
+#       -sameq \
+#       ${mpg}
