@@ -1,0 +1,752 @@
+gphoto2g --get-config=/main/actions/focuslock
+Label: Focus Lock
+Type: TOGGLE
+Current: 2
+
+gphoto2g --get-config=/main/actions/syncdatetime
+Label: Synchronize camera date and time with PC
+Type: TOGGLE
+Current: 0
+
+gphoto2g --get-config=/main/settings/output
+Label: Camera Output
+Type: RADIO
+Current: Off
+Choice: 0 LCD
+Choice: 1 Video OUT
+Choice: 2 Off
+
+gphoto2g --get-config=/main/settings/ownername
+Label: Owner Name
+Type: TEXT
+Current: 
+
+gphoto2g --get-config=/main/settings/capturetarget
+Label: Capture Target
+Type: RADIO
+Current: Internal RAM
+Choice: 0 Internal RAM
+Choice: 1 Memory card
+
+gphoto2g --get-config=/main/settings/capture
+Label: Capture
+Type: TOGGLE
+Current: 1
+
+gphoto2g --get-config=/main/status/model
+Label: Camera Model
+Type: TEXT
+Current: Canon PowerShot A520
+
+gphoto2g --get-config=/main/status/firmwareversion
+Label: Firmware Version
+Type: TEXT
+Current: 1.0.0.0
+
+gphoto2g --get-config=/main/status/orientation
+Label: Camera Orientation
+Type: TEXT
+Current: 0'
+
+gphoto2g --get-config=/main/imgsettings/imagequality
+Label: Image Quality
+Type: RADIO
+Current: superfine
+Choice: 0 normal
+Choice: 1 fine
+Choice: 2 superfine
+
+gphoto2g --get-config=/main/imgsettings/imageformat
+Label: Image Format
+Type: RADIO
+Current: JPEG
+Choice: 0 JPEG
+
+gphoto2g --get-config=/main/imgsettings/imagesize
+Label: Image Size
+Type: RADIO
+Current: Large
+Choice: 0 Large
+Choice: 1 Medium 1
+Choice: 2 Medium 2
+Choice: 3 Small
+
+gphoto2g --get-config=/main/imgsettings/iso
+Label: ISO Speed
+Type: RADIO
+Current: Auto
+Choice: 0 50
+Choice: 1 100
+Choice: 2 200
+Choice: 3 400
+Choice: 4 Auto
+
+gphoto2g --get-config=/main/imgsettings/whitebalance
+Label: WhiteBalance
+Type: RADIO
+Current: Auto
+Choice: 0 Auto
+Choice: 1 Daylight
+Choice: 2 Cloudy
+Choice: 3 Tungsten
+Choice: 4 Fluorescent
+Choice: 5 Fluorescent H
+Choice: 6 Custom
+
+gphoto2g --get-config=/main/imgsettings/photoeffect
+Label: Photo Effect
+Type: RADIO
+Current: Off
+Choice: 0 Off
+Choice: 1 Vivid
+Choice: 2 Neutral
+Choice: 3 Low sharpening
+Choice: 4 Sepia
+Choice: 5 Black & white
+
+gphoto2g --get-config=/main/capturesettings/zoom
+Label: Zoom
+Type: RANGE
+Current: 0
+Bottom: 0
+Top: 12
+Step: 1
+
+gphoto2g --get-config=/main/capturesettings/assistlight
+Label: Assist Light
+Type: RADIO
+Current: On
+Choice: 0 Off
+Choice: 1 On
+
+gphoto2g --get-config=/main/capturesettings/autorotation
+Label: Rotation Flag
+Type: RADIO
+Current: On
+Choice: 0 On
+Choice: 1 Off
+
+gphoto2g --get-config=/main/capturesettings/exposurecompensation
+Label: Exposure Compensation
+Type: RADIO
+Current: 0
+Choice: 0 +2
+Choice: 1 +1 2/3
+Choice: 2 +1 1/3
+Choice: 3 +1
+Choice: 4 +2/3
+Choice: 5 +1/3
+Choice: 6 0
+Choice: 7 -1/3
+Choice: 8 -2/3
+Choice: 9 -1
+Choice: 10 -1 1/3
+Choice: 11 -1 2/3
+Choice: 12 -2
+
+gphoto2g --get-config=/main/capturesettings/flashmode
+Label: Flash Mode
+Type: RADIO
+Current: off
+Choice: 0 off
+Choice: 1 auto
+Choice: 2 on
+Choice: 3 auto + red eye suppression
+Choice: 4 on + red eye suppression
+
+gphoto2g --get-config=/main/capturesettings/shootingmode
+Label: Canon Shooting Mode
+Type: RADIO
+Current: Auto
+Choice: 0 Auto
+Choice: 1 TV
+Choice: 2 AV
+Choice: 3 Manual
+
+gphoto2g --get-config=/main/capturesettings/aperture
+Label: Aperture
+Type: RADIO
+Current: 4
+Choice: 0 auto
+Choice: 1 1
+Choice: 2 1.1
+Choice: 3 1.2
+Choice: 4 1.2
+Choice: 5 1.4
+Choice: 6 1.6
+Choice: 7 1.8
+Choice: 8 1.8
+Choice: 9 2
+Choice: 10 2.2
+Choice: 11 2.5
+Choice: 12 2.5
+Choice: 13 2.8
+Choice: 14 3.2
+Choice: 15 3.5
+Choice: 16 3.5
+Choice: 17 4
+Choice: 18 4.5
+Choice: 19 4.5
+Choice: 20 5
+Choice: 21 5.6
+Choice: 22 6.3
+Choice: 23 6.7
+Choice: 24 7.1
+Choice: 25 8
+Choice: 26 9
+Choice: 27 9.5
+Choice: 28 10
+Choice: 29 11
+Choice: 30 13
+Choice: 31 13
+Choice: 32 14
+Choice: 33 16
+Choice: 34 18
+Choice: 35 19
+Choice: 36 20
+Choice: 37 22
+Choice: 38 25
+Choice: 39 27
+Choice: 40 29
+Choice: 41 32
+Choice: 42 36
+Choice: 43 38
+Choice: 44 40
+Choice: 45 45
+Choice: 46 51
+Choice: 47 54
+Choice: 48 57
+Choice: 49 64
+Choice: 50 72
+Choice: 51 76
+Choice: 52 81
+Choice: 53 91
+
+gphoto2g --get-config=/main/capturesettings/focusingpoint
+Label: Focusing Point
+Type: RADIO
+Current: Multiple Focusing Points (Center)
+Choice: 0 Multiple Focusing Points (Center)
+Choice: 1 Multiple Focusing Points, Auto
+
+gphoto2g --get-config=/main/capturesettings/shutterspeed
+Label: Shutter Speed
+Type: RADIO
+Current: 1/125
+Choice: 0 auto
+Choice: 1 bulb
+Choice: 2 bulb
+Choice: 3 30
+Choice: 4 25
+Choice: 5 20
+Choice: 6 20
+Choice: 7 15
+Choice: 8 13
+Choice: 9 10
+Choice: 10 10
+Choice: 11 8
+Choice: 12 6
+Choice: 13 6
+Choice: 14 5
+Choice: 15 4
+Choice: 16 3.2
+Choice: 17 3
+Choice: 18 2.5
+Choice: 19 2
+Choice: 20 1.6
+Choice: 21 1.5
+Choice: 22 1.3
+Choice: 23 1
+Choice: 24 0.8
+Choice: 25 0.7
+Choice: 26 0.6
+Choice: 27 0.5
+Choice: 28 0.4
+Choice: 29 0.3
+Choice: 30 0.3
+Choice: 31 1/4
+Choice: 32 1/5
+Choice: 33 1/6
+Choice: 34 1/6
+Choice: 35 1/8
+Choice: 36 1/10
+Choice: 37 1/10
+Choice: 38 1/13
+Choice: 39 1/15
+Choice: 40 1/20
+Choice: 41 1/20
+Choice: 42 1/25
+Choice: 43 1/30
+Choice: 44 1/40
+Choice: 45 1/45
+Choice: 46 1/50
+Choice: 47 1/60
+Choice: 48 1/80
+Choice: 49 1/90
+Choice: 50 1/100
+Choice: 51 1/125
+Choice: 52 1/160
+Choice: 53 1/180
+Choice: 54 1/200
+Choice: 55 1/250
+Choice: 56 1/320
+Choice: 57 1/350
+Choice: 58 1/400
+Choice: 59 1/500
+Choice: 60 1/640
+Choice: 61 1/750
+Choice: 62 1/800
+Choice: 63 1/1000
+Choice: 64 1/1250
+Choice: 65 1/1500
+Choice: 66 1/1600
+Choice: 67 1/2000
+Choice: 68 1/2500
+Choice: 69 1/3000
+Choice: 70 1/3200
+Choice: 71 1/4000
+Choice: 72 1/5000
+Choice: 73 1/6000
+Choice: 74 1/6400
+Choice: 75 1/8000
+
+gphoto2g --get-config=/main/capturesettings/meteringmode
+Label: Metering Mode
+Type: RADIO
+Current: Spot
+Choice: 0 Center-weighted
+Choice: 1 Spot
+Choice: 2 Evaluative
+
+gphoto2g --get-config=/main/capturesettings/afdistance
+Label: AF Distance
+Type: RADIO
+Current: Unknown value 0000
+Choice: 0 Unknown value 0000
+
+gphoto2g --get-config=/main/other/d001
+Label: Beep Mode
+Type: MENU
+Current: 1
+Choice: 0 0
+Choice: 1 1
+
+gphoto2g --get-config=/main/other/d002
+Label: Battery Type
+Type: MENU
+Current: 2
+Choice: 0 0
+Choice: 1 1
+Choice: 2 2
+Choice: 3 3
+Choice: 4 4
+Choice: 5 5
+
+gphoto2g --get-config=/main/other/d003
+Label: Battery Mode
+Type: MENU
+Current: 1
+Choice: 0 0
+Choice: 1 1
+Choice: 2 2
+Choice: 3 3
+
+gphoto2g --get-config=/main/other/d005
+Label: Camera Mode
+Type: TEXT
+Current: 32
+
+gphoto2g --get-config=/main/other/d006
+Label: Image Quality
+Type: MENU
+Current: 5
+Choice: 0 2
+Choice: 1 3
+Choice: 2 5
+
+gphoto2g --get-config=/main/other/d007
+Label: Full View File Format
+Type: MENU
+Current: 1
+Choice: 0 1
+
+gphoto2g --get-config=/main/other/d008
+Label: Image Size
+Type: MENU
+Current: 0
+Choice: 0 0
+Choice: 1 1
+Choice: 2 3
+Choice: 3 2
+
+gphoto2g --get-config=/main/other/d009
+Label: Self Time
+Type: TEXT
+Current: 100
+
+gphoto2g --get-config=/main/other/d00a
+Label: Flash Mode
+Type: MENU
+Current: 0
+Choice: 0 0
+Choice: 1 1
+Choice: 2 2
+Choice: 3 5
+Choice: 4 6
+
+gphoto2g --get-config=/main/other/d00b
+Label: Beep
+Type: MENU
+Current: 0
+Choice: 0 0
+Choice: 1 1
+
+gphoto2g --get-config=/main/other/d00c
+Label: Shooting Mode
+Type: MENU
+Current: 1
+Choice: 0 1
+Choice: 1 2
+Choice: 2 3
+Choice: 3 4
+
+gphoto2g --get-config=/main/other/d00e
+Label: Drive Mode
+Type: TEXT
+Current: 0
+
+gphoto2g --get-config=/main/other/d00f
+Label: Zoom
+Type: TEXT
+Current: 0
+
+gphoto2g --get-config=/main/other/d010
+Label: Metering Mode
+Type: MENU
+Current: 1
+Choice: 0 0
+Choice: 1 1
+Choice: 2 3
+
+gphoto2g --get-config=/main/other/d011
+Label: AF Distance
+Type: MENU
+Current: 0
+
+gphoto2g --get-config=/main/other/d012
+Label: Focusing Point
+Type: MENU
+Current: 12291
+Choice: 0 12291
+Choice: 1 12289
+
+gphoto2g --get-config=/main/other/d013
+Label: White Balance
+Type: MENU
+Current: 0
+Choice: 0 0
+Choice: 1 1
+Choice: 2 2
+Choice: 3 3
+Choice: 4 4
+Choice: 5 7
+Choice: 6 6
+
+gphoto2g --get-config=/main/other/d015
+Label: AF Mode
+Type: TEXT
+Current: 0
+
+gphoto2g --get-config=/main/other/d017
+Label: Contrast
+Type: MENU
+Current: 0
+Choice: 0 0
+
+gphoto2g --get-config=/main/other/d018
+Label: Color Gain
+Type: MENU
+Current: 0
+Choice: 0 0
+
+gphoto2g --get-config=/main/other/d019
+Label: Sharpness
+Type: MENU
+Current: 0
+Choice: 0 0
+
+gphoto2g --get-config=/main/other/d01c
+Label: ISO Speed
+Type: MENU
+Current: 0
+Choice: 0 64
+Choice: 1 72
+Choice: 2 80
+Choice: 3 88
+Choice: 4 0
+
+gphoto2g --get-config=/main/other/d01d
+Label: Aperture
+Type: MENU
+Current: 40
+
+gphoto2g --get-config=/main/other/d01e
+Label: Shutter Speed
+Type: MENU
+Current: 112
+
+gphoto2g --get-config=/main/other/d01f
+Label: Exposure Compensation
+Type: MENU
+Current: 24
+Choice: 0 8
+Choice: 1 11
+Choice: 2 13
+Choice: 3 16
+Choice: 4 19
+Choice: 5 21
+Choice: 6 24
+Choice: 7 27
+Choice: 8 29
+Choice: 9 32
+Choice: 10 35
+Choice: 11 37
+Choice: 12 40
+
+gphoto2g --get-config=/main/other/d023
+Label: Av Open
+Type: TEXT
+Current: 32767
+
+gphoto2g --get-config=/main/other/d024
+Label: Av Max
+Type: TEXT
+Current: 56
+
+gphoto2g --get-config=/main/other/d025
+Label: Focal Length
+Type: TEXT
+Current: 186
+
+gphoto2g --get-config=/main/other/d026
+Label: Focal Length Tele
+Type: TEXT
+Current: 742
+
+gphoto2g --get-config=/main/other/d027
+Label: Focal Length Wide
+Type: TEXT
+Current: 186
+
+gphoto2g --get-config=/main/other/d028
+Label: Focal Length Denominator
+Type: TEXT
+Current: 32
+
+gphoto2g --get-config=/main/other/d029
+Label: Capture Transfer Mode
+Type: MENU
+Current: 13
+Choice: 0 1
+Choice: 1 2
+Choice: 2 3
+Choice: 3 4
+Choice: 4 5
+Choice: 5 6
+Choice: 6 7
+Choice: 7 8
+Choice: 8 9
+Choice: 9 10
+Choice: 10 11
+Choice: 11 12
+Choice: 12 13
+Choice: 13 14
+Choice: 14 15
+
+gphoto2g --get-config=/main/other/d02a
+Label: Zoom
+Type: MENU
+Current: 0
+Choice: 0 0
+Choice: 1 1
+Choice: 2 2
+Choice: 3 3
+Choice: 4 4
+Choice: 5 5
+Choice: 6 6
+Choice: 7 7
+Choice: 8 8
+Choice: 9 9
+Choice: 10 10
+Choice: 11 11
+Choice: 12 12
+
+gphoto2g --get-config=/main/other/d02c
+Label: Size Quality Mode
+Type: MENU
+Current: (null)
+
+gphoto2g --get-config=/main/other/d02d
+Label: Supported Thumb Size
+Type: MENU
+Current: (null)
+
+gphoto2g --get-config=/main/other/d02e
+Label: Size of Output Data from Camera
+Type: TEXT
+Current: 20480
+
+gphoto2g --get-config=/main/other/d02f
+Label: Size of Input Data to Camera
+Type: TEXT
+Current: 5120
+
+gphoto2g --get-config=/main/other/d030
+Label: Remote API Version
+Type: TEXT
+Current: 256
+
+gphoto2g --get-config=/main/other/d031
+Label: Firmware Version
+Type: TEXT
+Current: 16777216
+
+gphoto2g --get-config=/main/other/d032
+Label: Camera Model
+Type: TEXT
+Current: Canon PowerShot A520
+
+gphoto2g --get-config=/main/other/d033
+Label: Camera Owner
+Type: TEXT
+Current: (null)
+
+gphoto2g --get-config=/main/other/d034
+Label: UNIX Time
+Type: TEXT
+Current: 1328581994
+
+gphoto2g --get-config=/main/other/d036
+Label: Camera Output
+Type: MENU
+Current: 3
+Choice: 0 1
+Choice: 1 2
+Choice: 2 3
+
+gphoto2g --get-config=/main/other/d037
+Label: Disp Av
+Type: TEXT
+Current: 1
+
+gphoto2g --get-config=/main/other/d038
+Label: Av Open Apex
+Type: TEXT
+Current: 26
+
+gphoto2g --get-config=/main/other/d039
+Label: Digital Zoom Magnification
+Type: TEXT
+Current: 2272
+
+gphoto2g --get-config=/main/other/d03a
+Label: Ml Spot Position
+Type: TEXT
+Current: 0
+
+gphoto2g --get-config=/main/other/d03b
+Label: Disp Av Max
+Type: TEXT
+Current: 0
+
+gphoto2g --get-config=/main/other/d03c
+Label: Av Max Apex
+Type: TEXT
+Current: 56
+
+gphoto2g --get-config=/main/other/d03d
+Label: EZoom Start Position
+Type: TEXT
+Current: 8
+
+gphoto2g --get-config=/main/other/d03e
+Label: Focal Length Tele
+Type: TEXT
+Current: 742
+
+gphoto2g --get-config=/main/other/d03f
+Label: EZoom Size of Tele
+Type: TEXT
+Current: 640
+
+gphoto2g --get-config=/main/other/d040
+Label: Photo Effect
+Type: MENU
+Current: 0
+Choice: 0 0
+Choice: 1 1
+Choice: 2 2
+Choice: 3 3
+Choice: 4 4
+Choice: 5 5
+
+gphoto2g --get-config=/main/other/d041
+Label: Assist Light
+Type: MENU
+Current: 0
+Choice: 0 1
+Choice: 1 0
+
+gphoto2g --get-config=/main/other/d042
+Label: Flash Quantity Count
+Type: MENU
+Current: 65535
+
+gphoto2g --get-config=/main/other/d043
+Label: Rotation Angle
+Type: TEXT
+Current: 0
+
+gphoto2g --get-config=/main/other/d044
+Label: Rotation Scene
+Type: MENU
+Current: 0
+Choice: 0 0
+Choice: 1 1
+
+gphoto2g --get-config=/main/other/d045
+Label: Event Emulate Mode
+Type: MENU
+Current: 7
+Choice: 0 1
+Choice: 1 2
+Choice: 2 3
+Choice: 3 4
+Choice: 4 5
+Choice: 5 6
+Choice: 6 7
+
+gphoto2g --get-config=/main/other/d046
+Label: DPOF Version
+Type: TEXT
+Current: 257
+
+gphoto2g --get-config=/main/other/d047
+Label: Type of Slideshow
+Type: TEXT
+Current: 0
+
+gphoto2g --get-config=/main/other/d048
+Label: Average Filesizes
+Type: TEXT
+Current: (null)
+
+gphoto2g --get-config=/main/other/d049
+Label: Model ID
+Type: TEXT
+Current: 22413312
+
+gphoto2g --get-config=/main/other/d04b
+Label: PTP Property 0xd04b
+Type: TEXT
+Current: 0

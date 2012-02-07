@@ -17,7 +17,7 @@ use Time::HiRes qw/usleep alarm/;
 my %defaults = (
 	"destination"          => 'img',
 	"cmd_file"             => '/tmp/gphoto_cmd', 
-	"dump_file"            => '/tmp/dump.jpg', 
+	"dump_file"            => 'dump.jpg', 
 	"file_mask"            => 'cap_%06d.jpg', 
 	"interval"             => 15,  # Lowest realistic
 	"timeout"              => 60, 
@@ -36,7 +36,7 @@ my @cmd_init = ('set-config capture=1',       # Capture mode (must be first conf
 		'set-config photoeffect=0',   # 0=None
 		'set-config capturetarget=0', # 0=RAM, 1=CF
 		'set-config flashmode=0',     # 0=Off 1=Auto 2=On 3=Fill 4=Auto
-		'set-config zoom=6',
+		'set-config zoom=0',
 		'set-config meteringmode=1',  # 0=Center 1=Spot 2=Evaluative
 		'set-config focusingpoint=0', # Center 
 		'set-config afdistance=0',    # 0=Auto 1=Near 2=Far
